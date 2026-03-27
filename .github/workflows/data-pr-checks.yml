@@ -175,13 +175,8 @@ jobs:
       - name: bandit
         run: bandit -r submission/ -x submission/tests || true
 
-      - name: Install gitleaks
-        run: |
-          TAG=$(curl -sSf https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
-                | grep '"tag_name"' | cut -d'"' -f4)
-          VERSION=${TAG#v}
-          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/${TAG}/gitleaks_${VERSION}_linux_x64.tar.gz" \
-            | tar -xz -C /usr/local/bin gitleaks
-
-      - name: Run gitleaks
-        run: gitleaks detect --config .gitleaks.toml --no-banner --redact --exit-code 1
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
