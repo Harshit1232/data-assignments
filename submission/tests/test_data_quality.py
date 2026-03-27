@@ -58,7 +58,7 @@ def test_update_overwrites_warehouse_row(seeded):
         {
             "customer_id": "c1",
             "name": "Alice Smith",
-            "email": "alice@example.com",
+            "email": "alice-test-user",
             "status": "suspended",
             "created_at": ts,
             "updated_at": ts,
@@ -138,7 +138,7 @@ def test_lake_row_count_only_increases(seeded):
         {
             "customer_id": "c1",
             "name": "Alice Updated",
-            "email": "alice@example.com",
+            "email": "alice-test-user",
             "status": "active",
             "created_at": ts,
             "updated_at": ts,
@@ -160,7 +160,7 @@ def test_lake_retains_all_operations_for_same_pk(seeded):
         {
             "customer_id": "c1",
             "name": "Alice v2",
-            "email": "alice@example.com",
+            "email": "alice-test-user",
             "status": "active",
             "created_at": ts,
             "updated_at": ts,

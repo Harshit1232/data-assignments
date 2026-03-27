@@ -46,7 +46,7 @@ def seeded(conn: duckdb.DuckDBPyConnection, capture: CDCCapture):
         {
             "customer_id": "c1",
             "name": "Alice",
-            "email": "alice@example.com",
+            "email": "alice-test-user",
             "status": "active",
             "created_at": ts,
             "updated_at": ts,
@@ -58,7 +58,7 @@ def seeded(conn: duckdb.DuckDBPyConnection, capture: CDCCapture):
         {
             "customer_id": "c2",
             "name": "Bob",
-            "email": "bob@example.com",
+            "email": "bob-test-user",
             "status": "active",
             "created_at": ts,
             "updated_at": ts,
