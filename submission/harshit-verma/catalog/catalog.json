@@ -1,0 +1,87 @@
+{
+  "catalog": "cdc-lakehouse",
+  "description": "Lake and warehouse datasets produced by the CDC pipeline. The local JSON stands in for a managed catalog (AWS Glue, Unity Catalog, DataHub).",
+  "datasets": [
+    {
+      "name": "lake_cdc_events",
+      "layer": "lake",
+      "description": "Append-only history of every source change (one row per insert/update/delete).",
+      "owner": "data-platform",
+      "consumers": ["data-platform", "audit", "warehouse-rebuild"],
+      "update_cadence": "real-time (append-only)",
+      "access_path": "DuckDB table lake_cdc_events",
+      "schema": {
+        "sequence": "BIGINT — global order / offset of the change",
+        "operation": "VARCHAR — insert | update | delete",
+        "table_name": "VARCHAR — source table the change came from",
+        "primary_key": "VARCHAR — primary key of the changed row",
+        "data": "VARCHAR — full row image as JSON",
+        "captured_at": "TIMESTAMP — when the change was captured",
+        "ingested_at": "TIMESTAMP — when the lake stored it"
+      }
+    },
+    {
+      "name": "wh_customers",
+      "layer": "warehouse",
+      "description": "Current-state snapshot of customers.",
+      "owner": "data-platform",
+      "consumers": ["analytics", "finance", "product"],
+      "update_cadence": "near-real-time",
+      "access_path": "DuckDB table wh_customers",
+      "schema": {
+        "customer_id": "VARCHAR — primary key",
+        "name": "VARCHAR",
+        "email": "VARCHAR",
+        "status": "VARCHAR — active | suspended | closed",
+        "country": "VARCHAR — nullable",
+        "created_at": "TIMESTAMP",
+        "updated_at": "TIMESTAMP",
+        "_cdc_seq": "BIGINT — sequence of the last applied change",
+        "_deleted": "BOOLEAN — soft-delete flag",
+        "_loaded_at": "TIMESTAMP — when the warehouse applied the change"
+      }
+    },
+    {
+      "name": "wh_wallets",
+      "layer": "warehouse",
+      "description": "Current-state snapshot of wallets (latest balance per wallet).",
+      "owner": "data-platform",
+      "consumers": ["analytics", "finance"],
+      "update_cadence": "near-real-time",
+      "access_path": "DuckDB table wh_wallets",
+      "schema": {
+        "wallet_id": "VARCHAR — primary key",
+        "customer_id": "VARCHAR — owning customer",
+        "currency": "VARCHAR — USD | EUR | INR",
+        "balance": "DECIMAL(18,2)",
+        "status": "VARCHAR — active | frozen | closed",
+        "created_at": "TIMESTAMP",
+        "updated_at": "TIMESTAMP",
+        "_cdc_seq": "BIGINT — sequence of the last applied change",
+        "_deleted": "BOOLEAN — soft-delete flag",
+        "_loaded_at": "TIMESTAMP — when the warehouse applied the change"
+      }
+    },
+    {
+      "name": "wh_wallet_ledger",
+      "layer": "warehouse",
+      "description": "Current-state snapshot of wallet ledger entries (append-only facts).",
+      "owner": "data-platform",
+      "consumers": ["analytics", "finance"],
+      "update_cadence": "near-real-time",
+      "access_path": "DuckDB table wh_wallet_ledger",
+      "schema": {
+        "wallet_id": "VARCHAR — part of primary key",
+        "entry_seq": "INTEGER — part of primary key",
+        "amount": "DECIMAL(18,2) — signed (+credit / -debit)",
+        "entry_type": "VARCHAR — credit | debit | adjustment",
+        "balance_after": "DECIMAL(18,2)",
+        "external_ref": "VARCHAR — nullable",
+        "created_at": "TIMESTAMP",
+        "_cdc_seq": "BIGINT — sequence of the last applied change",
+        "_deleted": "BOOLEAN — soft-delete flag",
+        "_loaded_at": "TIMESTAMP — when the warehouse applied the change"
+      }
+    }
+  ]
+}
