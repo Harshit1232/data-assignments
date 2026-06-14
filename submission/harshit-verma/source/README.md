@@ -78,11 +78,11 @@ pytest -q
 Expected result:
 
 ```
-35 passed
+37 passed
 ```
 
-If all 35 pass, every layer — and every failure case (duplicates, out-of-order
-events, deletes, restarts, schema breaks) — is working as designed.
+If all 37 pass, every layer — and every failure case (duplicates, out-of-order
+events, deletes, restarts, schema breaks, bad data) — is working as designed.
 
 > Running from the **repo root** instead? Use the same form CI uses:
 > `pytest submission/harshit-verma/ -q` and
@@ -105,7 +105,7 @@ Each requirement maps to a command or test you can run to prove it. After
 | 6 | **Deletes handled** | `tests/test_warehouse.py::test_delete_soft_deletes` | Deleted row kept with `_deleted = true` |
 | 7 | **Schema change detection + safe stop** | `python scripts/check_schema_contracts.py` + `tests/test_schema_check.py` | Dropped/retyped column raises `SchemaChangeError` |
 | 8 | **Time travel / historical recovery** | `tests/test_warehouse.py::test_rebuild_from_lake_enables_time_travel` | Warehouse rebuilt from the lake up to a chosen sequence |
-| 9 | **Validation parity** (source rules re-checked downstream) | `python scripts/run_data_quality_checks.py` + `tests/test_quality.py` | B1 (non-negative), B2 (balance = ledger sum), referential integrity; catches an injected bad value |
+| 9 | **Validation parity** (source rules re-checked downstream) | `python scripts/run_data_quality_checks.py` + `tests/test_quality.py` | System checks (PK uniqueness, not-null, referential integrity, enum domains) + business rules (B1 non-negative, B2 balance = ledger sum); catches injected bad values |
 | 10 | **Catalog exposure** | `python scripts/validate_catalog.py` + `tests/test_catalog.py` | Every lake/warehouse dataset is registered with owner, consumers, cadence, schema |
 | 11 | **Tests prove behavior, not just happy path** | `pytest -q` | 35 tests, most covering failure cases |
 | 12 | **Reproducible, one-command run** | `pip install -r requirements.txt && pytest` | Clean clone → green |
